@@ -1,0 +1,42 @@
+---
+title: "Homework 3a"
+author: "Sindhi Polubothu"
+date: "January 31, 2017"
+output: html_document
+---
+
+#Downloaded data and recoded ideo (ideology variable) to be -2 to 2 for liberal to conservative as shown below. I also recoded marital to be a dummy variable with 0 = not married 1 = married 
+
+#As shown below in the linear regression output the intercept is -.09 which means that for an unmarried male of minimum age (of the survey) they are likely to be a -.09 on a scale of -2 to 2 for liberal to conservative. As shown by the statistically significant coefficients (p-values less than .05 so we can reject the null hypothesis) females are more likely to be liberal by .09, as age increases by one conservatism increases by .005, and being married increases the conservative scale by .21 all on a scale of -2 to 2 from liberal to conservative. The R-squared of .026 (from 0 to 1) shows that we may be missing many possible variables to explain the Y dependant variable. 
+
+```{r}
+library(foreign)
+
+d <- read.dta("http://www.stat.columbia.edu/~gelman/surveys.course/pew_research_center_june_elect_wknd_data.dta")
+
+table(d$ideo)
+
+ideo.num <- as.numeric(d$ideo) 
+table(ideo.num)
+ideo.num[ideo.num == 7] <- NA
+table(ideo.num)  
+ideo.num.1 <- 6-ideo.num  
+table(ideo.num.1)
+ideo.num.1[ideo.num.1 == 0] <- -2
+ideo.num.1[ideo.num.1 == 1] <- -1
+ideo.num.1[ideo.num.1 == 2] <- 0
+ideo.num.1[ideo.num.1 == 3] <- 1
+ideo.num.1[ideo.num.1 == 4] <- 2
+table(ideo.num.1)
+
+table(d$marital)
+marital <- as.numeric(d$marital)
+table(marital)
+marital <- ifelse(marital == 2, 1,0)
+table(marital)
+
+lm1 <- lm(ideo.num.1 ~ d$sex + d$age + marital)
+
+summary(lm1)
+
+```
